@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "hardhat/console.sol";
 
 // Desired Features
 // - Mint new employer badge (admin only)
@@ -28,6 +27,8 @@ Ownable
 
     /**
      * @dev Mint a new Employer Verification Badge
+     * the uri here will contain the employer name, logo and other metadata
+     *
      * @return uint256 representing the newly minted token id
      */
     function mintNewBadge(
@@ -39,6 +40,8 @@ Ownable
 
     /**
      * @dev Mint a pre-verified employer token and transfer to a new wallet
+     * we allow badge owners to add to their team
+     *
      * @return uint256 representing the newly minted token id
      */
     function addToTeam(
@@ -67,6 +70,9 @@ Ownable
         return tokenId;
     }
 
+    /**
+     * @dev Burn the nft
+     */
     function burn(uint256 tokenId) external onlyOwner {
         _burn(tokenId);
     }
