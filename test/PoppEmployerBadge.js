@@ -37,55 +37,61 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             // mint employer verification
             let mintResult = await myContract
                 .connect(owner)
-                .mintNewBadge(alice.address, "QmfVMAmNM1kDEBYrC2TPzQDoCRFH6F5tE1e9Mr4FkkR5Xr");
+                .mintNewBadge(alice.address);
 
             // check transaction was successful
             let txResult = await mintResult.wait(1);
-            tokenId = txResult.events[0].args.tokenId.toString();
+            tokenId = txResult.events[0].args.id.toString();
 
             expect(txResult.status).to.equal(1);
 
-            let balance = await myContract.balanceOf(alice.address);
+            let balance = await myContract.balanceOf(alice.address, tokenId);
             expect(balance.toBigInt()).to.be.equal(1);
 
             // check token uri
-            let uri = await myContract.tokenURI(tokenId);
-            expect(uri).to.be.equal("QmfVMAmNM1kDEBYrC2TPzQDoCRFH6F5tE1e9Mr4FkkR5Xr");
+            let uri = await myContract.uri(tokenId);
+            expect(uri).to.be.equal("https://test.com/{id}.json");
+
+            await expect(
+                myContract
+                    .connect(bob)
+                    .mintNewBadge(bob.address)
+            ).to.be.revertedWith("Ownable: caller is not the owner");
         });
 
-        describe("mintNewBadge()", function () {
-            it("Should be able to mint an employer verification token and add wallet", async function () {
+        describe("addToMyTeam()", function () {
+            it("Should be able to add a wallet to my team", async function () {
                 // add a new wallet
                 let mintResult = await myContract
                     .connect(alice)
-                    .addToTeam(connie.address, tokenId);
+                    .addToMyTeam(connie.address);
                 // check uri is the same for the new wallet token
                 let txResult = await mintResult.wait(1);
-                let newTokenId = txResult.events[0].args.tokenId.toString();
-                let uri = await myContract.tokenURI(newTokenId);
-                expect(uri).to.be.equal("QmfVMAmNM1kDEBYrC2TPzQDoCRFH6F5tE1e9Mr4FkkR5Xr");
-                console.log(tokenId);
+                let _tokenId = txResult.events[0].args.id.toString();
+                expect(_tokenId).to.be.equal("1");
 
+                await expect(
+                    myContract
+                        .connect(alice)
+                        .addToMyTeam(connie.address)
+                ).to.be.revertedWith("Wallet already apart of a team");
             });
 
-            it("Should fail if non-owner wallet tries to mint a new token", async function () {
-                await expect(myContract
-                    .connect(alice)
-                    .mintNewBadge(alice.address, "QmfVMAmNM1kDEBYrC2TPzQDoCRFH6F5tE1e9Mr4FkkR5Xr")).to.be.revertedWith("Ownable: caller is not the owner");
-            });
-
-            it("Should fail if non-owner wallet tries to add a new wallet", async function () {
-                await expect(myContract
-                    .connect(bob)
-                    .addToTeam(bob.address, tokenId)).to.be.revertedWith("Only the owner can do this");
+            it("Should fail if user tries to add to a non-existent team", async function () {
+                // add a new wallet
+                await expect(
+                    myContract
+                        .connect(bob)
+                        .addToMyTeam(connie.address)
+                ).to.be.revertedWith("You need to register your employer");
             });
 
             it("Should be able to burn token (admin only)", async function () {
                 await myContract
                     .connect(owner)
-                    .burn(tokenId)
+                    .burn(alice.address, tokenId, 1)
 
-                let balance = await myContract.balanceOf(alice.address);
+                let balance = await myContract.balanceOf(alice.address, tokenId);
                 expect(balance.toBigInt()).to.be.equal(0);
             });
         });

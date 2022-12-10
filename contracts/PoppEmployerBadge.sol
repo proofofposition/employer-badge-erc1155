@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
@@ -11,19 +11,20 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // - Mint new employer badge (admin only)
 // - Assign ownership to employer (admin only)
 // - Add wallet to team (admin only)
-// - Burn Tokens (only admin?)
-// - ERC721 full interface (base, metadata, enumerable)
+// - Burn Tokens (admin only?)
+// - ERC1155 full interface (base, metadata, enumerable)
 contract PoppEmployerBadge is
-ERC721,
-ERC721Enumerable,
-ERC721URIStorage,
+ERC1155,
+ERC1155URIStorage,
 Ownable
 {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
+    // This can only be done because we only allow 1 token per wallet
+    mapping(address => uint256) private _walletToToken;
 
-    constructor() ERC721("Proof Of Position Employer Badge", "POPP_BADGE") {}
+    constructor() ERC1155("https://test.com/{id}.json") {}
 
     /**
      * @dev Mint a new Employer Verification Badge
@@ -31,89 +32,73 @@ Ownable
      *
      * @return uint256 representing the newly minted token id
      */
-    function mintNewBadge(
-        address to,
-        string memory uri
-    ) external onlyOwner returns (uint256) {
-        return _mintToken(to, uri);
+    function mintNewBadge(address _to) external onlyOwner returns (uint256) {
+        return _mintToken(_to);
     }
 
     /**
      * @dev Mint a pre-verified employer token and transfer to a new wallet
+     * this is an admin function for setting up a team's wallets
+     *
+     * @return uint256 representing the newly minted token id
+     */
+    function addToTeam(address _to, uint256 _tokenId) external onlyOwner returns (uint256) {
+        return _addToTeam(_to, _tokenId);
+    }
+
+    /**
+    * @dev Mint a pre-verified employer token and transfer to a new wallet
      * we allow badge owners to add to their team
      *
      * @return uint256 representing the newly minted token id
      */
-    function addToTeam(
-        address to,
-        uint256 tokenId
-    ) external returns (uint256) {
-        string memory uri = tokenURI(tokenId);
-        require(_msgSender() == ownerOf(tokenId) || owner() == _msgSender(), "Only the owner can do this");
+    function addToMyTeam(address _to) external returns (uint256) {
+        uint256 _tokenId = tokenFromWallet(_msgSender());
+        require(_tokenId != 0, "You need to register your employer");
+        require(tokenFromWallet(_to) == 0, "Wallet already apart of a team");
 
-        return _mintToken(to, uri);
+        return _addToTeam(_to, _tokenId);
+    }
+
+    function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
+        _mint(_to, _tokenId, 1, "");
+        _walletToToken[_to] = _tokenId;
+        return _tokenId;
     }
 
     /**
-     * @dev Mint a new NFT
+     * @dev Mint a new NFT. This is an internal function that is called by
+     * `mintNewBadge` and `addToTeam`.
+     * 1. Mint the token
+     * 2. Set the token URI
+     * 3. Set the token to the wallet
      * @return uint256 representing the newly minted token id
      */
-    function _mintToken(
-        address to,
-        string memory uri
-    ) internal returns (uint256) {
+    function _mintToken(address _to) internal returns (uint256) {
         _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
+        uint256 _tokenId = _tokenIdCounter.current();
 
-        return tokenId;
+        return _addToTeam(_to, _tokenId);
+    }
+
+    function burn(
+        address from,
+        uint256 id,
+        uint256 amount
+    ) public onlyOwner {
+        super._burn(from, id, amount);
     }
 
     /**
-     * @dev Burn the nft
+     * @dev return the employer token id for a given wallet.
+     * Remember that a wallet can only own 1 employer token at a time
      */
-    function burn(uint256 tokenId) external onlyOwner {
-        _burn(tokenId);
+    function tokenFromWallet(address _address) public view returns (uint256) {
+        return _walletToToken[_address];
     }
-
 
     // The following functions are overrides required by Solidity.
-
-    /**
-     * @dev Validate the mint
-     */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable) virtual {
-        // token can only be minted or burnt
-        if (to != address(0)) {
-            require(from == address(0), "Employer badges are non-transferable");
-            require(balanceOf(to) == 0, "You already have a POPP Employer Badge");
-        }
-    }
-
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-    public
-    view
-    override(ERC721, ERC721Enumerable)
-    returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
-    function tokenURI(uint256 tokenId)
-    public
-    view
-    override(ERC721, ERC721URIStorage)
-    returns (string memory)
-    {
-        return super.tokenURI(tokenId);
+    function uri(uint256 tokenId) public view virtual override(ERC1155, ERC1155URIStorage)  returns (string memory) {
+        return super.uri(tokenId);
     }
 }
