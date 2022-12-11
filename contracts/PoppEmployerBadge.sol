@@ -83,7 +83,8 @@ Ownable
 
     /**
      * @dev remove a wallet from a team
-     * This can only be done by a team member or admin user
+     * This can only be done by a team member.
+     * note: A wallet can remove itself from a team
      */
     function removeFromMyTeam(address from) public {
         uint256 _tokenId = tokenFromWallet(_msgSender());
@@ -92,7 +93,7 @@ Ownable
 
     /**
      * @dev remove a wallet from a team
-     * This can only be done by a team member or admin user
+     * This can only be done by an admin user
      */
     function removeFromTeam(
         address from,
