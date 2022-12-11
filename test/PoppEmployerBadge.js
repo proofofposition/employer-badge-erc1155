@@ -86,13 +86,31 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                 ).to.be.revertedWith("You need to register your employer");
             });
 
-            it("Should be able to burn token (admin only)", async function () {
+            it("Should be able to remove from team (admin)", async function () {
                 await myContract
                     .connect(owner)
-                    .burn(alice.address, tokenId, 1)
+                    .removeFromTeam(alice.address, tokenId)
 
                 let balance = await myContract.balanceOf(alice.address, tokenId);
                 expect(balance.toBigInt()).to.be.equal(0);
+            });
+
+            it("Should be able to remove from team (team member)", async function () {
+                await myContract
+                    .connect(alice)
+                    .removeFromMyTeam(alice.address)
+
+                let balance = await myContract.balanceOf(alice.address, tokenId);
+                expect(balance.toBigInt()).to.be.equal(0);
+            });
+
+            it("Should fail if user tries to remove from a team that you don't belong to", async function () {
+                // add a new wallet
+                await expect(
+                    myContract
+                        .connect(bob)
+                        .removeFromTeam(alice.address, tokenId)
+                ).to.be.revertedWith("Ownable: caller is not the owner");
             });
         });
     });

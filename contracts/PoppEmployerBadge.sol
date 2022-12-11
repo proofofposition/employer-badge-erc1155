@@ -81,12 +81,24 @@ Ownable
         return _addToTeam(_to, _tokenId);
     }
 
-    function burn(
+    /**
+     * @dev remove a wallet from a team
+     * This can only be done by a team member or admin user
+     */
+    function removeFromMyTeam(address from) public {
+        uint256 _tokenId = tokenFromWallet(_msgSender());
+        super._burn(from, _tokenId, 1);
+    }
+
+    /**
+     * @dev remove a wallet from a team
+     * This can only be done by a team member or admin user
+     */
+    function removeFromTeam(
         address from,
-        uint256 id,
-        uint256 amount
+        uint256 id
     ) public onlyOwner {
-        super._burn(from, id, amount);
+        super._burn(from, id, 1);
     }
 
     /**
