@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
+import "popp-interfaces/IEmployerSft.sol";
 // Desired Features
 // - Mint new employer badge (admin only)
 // - Assign ownership to employer (admin only)
@@ -16,13 +16,14 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract PoppEmployerBadge is
 ERC1155,
 ERC1155URIStorage,
-Ownable
+Ownable,
+IEmployerSft
 {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
-    mapping(address => uint256) private _walletToTokenId;
+    mapping(address => uint32) private _walletToTokenId;
 
     constructor() ERC1155("https://test.com/{id}.json") {}
 
@@ -53,16 +54,16 @@ Ownable
      * @return uint256 representing the newly minted token id
      */
     function addToMyTeam(address _to) external returns (uint256) {
-        uint256 _tokenId = tokenFromWallet(_msgSender());
+        uint256 _tokenId = _walletToTokenId[_msgSender()];
         require(_tokenId != 0, "You need to register your employer");
-        require(tokenFromWallet(_to) == 0, "Wallet already apart of a team");
+        require(_walletToTokenId[_to] == 0, "Wallet already apart of a team");
 
         return _addToTeam(_to, _tokenId);
     }
 
     function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
-        _walletToTokenId[_to] = _tokenId;
+        _walletToTokenId[_to] = uint32(_tokenId);
         return _tokenId;
     }
 
@@ -87,7 +88,7 @@ Ownable
      * note: A wallet can remove itself from a team
      */
     function removeFromMyTeam(address from) public {
-        uint256 _tokenId = tokenFromWallet(_msgSender());
+        uint256 _tokenId = _walletToTokenId[_msgSender()];
         super._burn(from, _tokenId, 1);
     }
 
@@ -106,7 +107,7 @@ Ownable
      * @dev return the employer token id for a given wallet.
      * Remember that a wallet can only own 1 employer token at a time
      */
-    function tokenFromWallet(address _address) public view returns (uint256) {
+    function employerIdFromWallet(address _address) external view returns (uint32) {
         return _walletToTokenId[_address];
     }
 
