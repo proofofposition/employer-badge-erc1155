@@ -22,7 +22,7 @@ Ownable
 
     Counters.Counter private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
-    mapping(address => uint256) private _walletToToken;
+    mapping(address => uint256) private _walletToTokenId;
 
     constructor() ERC1155("https://test.com/{id}.json") {}
 
@@ -62,7 +62,7 @@ Ownable
 
     function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
-        _walletToToken[_to] = _tokenId;
+        _walletToTokenId[_to] = _tokenId;
         return _tokenId;
     }
 
@@ -107,7 +107,7 @@ Ownable
      * Remember that a wallet can only own 1 employer token at a time
      */
     function tokenFromWallet(address _address) public view returns (uint256) {
-        return _walletToToken[_address];
+        return _walletToTokenId[_address];
     }
 
     // The following functions are overrides required by Solidity.
