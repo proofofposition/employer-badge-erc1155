@@ -23,7 +23,7 @@ IEmployerSft
 
     Counters.Counter private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
-    mapping(address => uint32) private _walletToTokenId;
+    mapping(address => uint32) public _walletToTokenId;
 
     constructor() ERC1155("https://test.com/{id}.json") {}
 
