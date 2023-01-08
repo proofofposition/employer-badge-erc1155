@@ -57,6 +57,11 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                     .connect(bob)
                     .mintNewBadge(bob.address)
             ).to.be.revertedWith("Ownable: caller is not the owner");
+
+            // test non-transferable
+            await expect(
+                myContract.safeTransferFrom(owner.address, alice.address, 1, 1, "0x")
+            ).to.be.revertedWith("Employer badges are non-transferable");
         });
 
         describe("addToMyTeam()", function () {

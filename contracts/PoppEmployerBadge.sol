@@ -29,7 +29,7 @@ IEmployerSft
 
     /**
      * @dev Mint a new Employer Verification Badge
-     * the uri here will contain the employer name, logo and other metadata
+     * the uri here will be https://test.com/{id}.json.
      *
      * @return uint256 representing the newly minted token id
      */
@@ -71,8 +71,7 @@ IEmployerSft
      * @dev Mint a new NFT. This is an internal function that is called by
      * `mintNewBadge` and `addToTeam`.
      * 1. Mint the token
-     * 2. Set the token URI
-     * 3. Set the token to the wallet
+     * 2. Set the token to the wallet
      * @return uint256 representing the newly minted token id
      */
     function _mintToken(address _to) internal returns (uint256) {
@@ -87,9 +86,9 @@ IEmployerSft
      * This can only be done by a team member.
      * note: A wallet can remove itself from a team
      */
-    function removeFromMyTeam(address from) public {
+    function removeFromMyTeam(address _from) public {
         uint256 _tokenId = _walletToTokenId[_msgSender()];
-        super._burn(from, _tokenId, 1);
+        super._burn(_from, _tokenId, 1);
     }
 
     /**
@@ -97,10 +96,10 @@ IEmployerSft
      * This can only be done by an admin user
      */
     function removeFromTeam(
-        address from,
-        uint256 id
+        address _from,
+        uint256 _id
     ) public onlyOwner {
-        super._burn(from, id, 1);
+        super._burn(_from, _id, 1);
     }
 
     /**
@@ -114,5 +113,19 @@ IEmployerSft
     // The following functions are overrides required by Solidity.
     function uri(uint256 tokenId) public view virtual override(ERC1155, ERC1155URIStorage)  returns (string memory) {
         return super.uri(tokenId);
+    }
+
+    /**
+    * @dev This override is to make the token non-transferable
+    */
+    function _beforeTokenTransfer(
+        address,
+        address from,
+        address to,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) internal virtual override(ERC1155) {
+        require(from == address(0) || to == address(0), "Employer badges are non-transferable");
     }
 }
