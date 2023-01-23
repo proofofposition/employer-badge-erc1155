@@ -5,7 +5,7 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Token = await ethers.getContractFactory("POPPToken");
+  const Token = await ethers.getContractFactory("PoppEmployerBadge");
   const token = await Token.deploy();
 
   console.log("Token address:", token.address);
