@@ -15,12 +15,12 @@ module.exports = {
     }
   },
   networks: {
-    goerli: {
-      url: API_URL,
-      accounts: [
-        PRIVATE_KEY,
-      ],
-    },
+    // goerli: {
+    //   url: API_URL,
+    //   accounts: [
+    //     PRIVATE_KEY,
+    //   ],
+    // },
   },
   gasReporter: {
     enabled: !!(REPORT_GAS)
