@@ -1,5 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
+require("solidity-coverage");
 require('dotenv').config({path:__dirname+'/.env'})
 const { API_URL, PRIVATE_KEY, REPORT_GAS } = process.env;
 

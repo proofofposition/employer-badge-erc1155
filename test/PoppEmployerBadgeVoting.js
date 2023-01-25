@@ -40,10 +40,15 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                     .propose("test.json");
 
                 // check uri is the same for the new wallet token
-                let proposal = await this.contract
+                let myProposal = await this.contract
                     .connect(alice)
                     .getMyProposal();
+                expect(myProposal.uri).to.equal("test.json");
+                let proposal = await this.contract
+                    .connect(alice)
+                    .getProposal(1);
                 expect(proposal.uri).to.equal("test.json");
+
 
                 expect(
                     await this.token

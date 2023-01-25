@@ -25,7 +25,7 @@ IEmployerSft
     // This can only be done because we only allow 1 token per wallet
     mapping(address => uint32) public _walletToTokenId;
 
-    constructor() ERC1155("https://test.com/{id}.json") {}
+    constructor() ERC1155("https://ipfs.io/ipfs/QmZ2tGMUt8AndeghM5CL3pfZqcWaEos8YdqjxyRVtk4XGF?filename={id}.json") {}
 
     /**
      * @dev Mint a new Employer Verification Badge
@@ -61,6 +61,13 @@ IEmployerSft
         return _addToTeam(_to, _tokenId);
     }
 
+    /**
+    * @dev Mint a new token and add to a team
+     * this is an internal function that is called by `mintNewBadge` and `addToTeam`
+     * 1. Mint the token
+     * 2. Set the token to the wallet
+     * @return uint256 representing the newly minted token id
+     */
     function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
         _walletToTokenId[_to] = uint32(_tokenId);
@@ -113,6 +120,10 @@ IEmployerSft
     // The following functions are overrides required by Solidity.
     function uri(uint256 tokenId) public view virtual override(ERC1155, ERC1155URIStorage)  returns (string memory) {
         return super.uri(tokenId);
+    }
+
+    function destruct() public onlyOwner {
+        selfdestruct(payable(owner()));
     }
 
     /**

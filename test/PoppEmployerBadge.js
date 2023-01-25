@@ -39,6 +39,8 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                 .connect(owner)
                 .mintNewBadge(alice.address);
 
+            let batch = await myContract.balanceOfBatch([alice.address], [1])
+            expect(batch.toString()).to.equal('1');
             // check transaction was successful
             let txResult = await mintResult.wait(1);
             tokenId = txResult.events[0].args.id.toString();
@@ -50,7 +52,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
 
             // check token uri
             let uri = await myContract.uri(tokenId);
-            expect(uri).to.be.equal("https://test.com/{id}.json");
+            expect(uri).to.be.equal("https://ipfs.io/ipfs/QmZ2tGMUt8AndeghM5CL3pfZqcWaEos8YdqjxyRVtk4XGF?filename={id}.json");
 
             await expect(
                 myContract
@@ -62,6 +64,27 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             await expect(
                 myContract.safeTransferFrom(owner.address, alice.address, 1, 1, "0x")
             ).to.be.revertedWith("Employer badges are non-transferable");
+        });
+
+        describe("addToTeam()", function () {
+            it("Owner should add a wallet to a pre-existing team", async function () {
+                // add to team
+                await myContract
+                    .addToTeam(connie.address, 1);
+
+                expect(await myContract.employerIdFromWallet(connie.address)).to.equal(
+                    1
+                );
+            });
+
+            it("Should fail non-owner to add to team", async function () {
+                // add a new wallet
+                await expect(
+                    myContract
+                        .connect(bob)
+                        .addToTeam(connie.address, 1)
+                ).to.be.revertedWith("Ownable: caller is not the owner");
+            });
         });
 
         describe("addToMyTeam()", function () {
@@ -117,6 +140,34 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                         .removeFromTeam(alice.address, tokenId)
                 ).to.be.revertedWith("Ownable: caller is not the owner");
             });
+        });
+    });
+
+    describe("Other Functions", function () {
+        it("Owner should add a wallet to a pre-existing team", async function () {
+            // add to team
+            expect(await myContract.supportsInterface(0x01ffc9a7)).to.equal(
+                true
+            );
+
+            expect(await myContract.owner()).to.equal(
+                owner.address
+            );
+
+            await myContract.transferOwnership(alice.address)
+
+            expect(await myContract.owner()).to.equal(
+                alice.address
+            );
+
+            await myContract.connect(alice).transferOwnership(owner.address)
+
+            await myContract.destruct();
+
+            await expect(
+                myContract
+                    .balanceOf(alice.address, tokenId)
+            ).to.be.reverted;
         });
     });
 });
