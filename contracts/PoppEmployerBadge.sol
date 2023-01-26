@@ -122,7 +122,7 @@ IEmployerSft
         return super.uri(tokenId);
     }
 
-    function destruct() public onlyOwner {
+    function selfDestruct() public onlyOwner {
         selfdestruct(payable(owner()));
     }
 

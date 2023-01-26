@@ -24,6 +24,9 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
             await this.contract
                 .setProposalCost(100);
 
+            await this.contract
+                .setVoteMinBalance(100);
+
             [owner, alice, bob, connie] = await ethers.getSigners();
             // starting balance for alice
             this.token.connect(owner).transfer(alice.address, 100);
@@ -147,6 +150,13 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                         .connect(owner)
                         .vote(1, false)
                 ).to.be.revertedWith("You cannot vote on your own proposal");
+
+                // you need to be a verified employer to vote
+                await expect(
+                    this.contract
+                        .connect(bob)
+                        .vote(1, false)
+                ).to.be.revertedWith("You must have an employer badge to vote");
             });
         });
 

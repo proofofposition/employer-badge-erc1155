@@ -162,7 +162,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
 
             await myContract.connect(alice).transferOwnership(owner.address)
 
-            await myContract.destruct();
+            await myContract.selfDestruct();
 
             await expect(
                 myContract

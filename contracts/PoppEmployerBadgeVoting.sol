@@ -59,14 +59,7 @@ PoppEmployerBadge
 
         proposals[_id] = proposal;
         addressToProposal[_msgSender()] = proposal;
-        require(
-            token.transferFrom(
-                _msgSender(),
-                address(this),
-                proposalCost
-            ),
-            "Failed to transfer tokens"
-        );
+        token.transferFrom(_msgSender(), address(this), proposalCost);
         return _id;
     }
 
