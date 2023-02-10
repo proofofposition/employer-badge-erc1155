@@ -24,6 +24,7 @@ IEmployerSft
     Counters.Counter private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
     mapping(address => uint32) public _walletToTokenId;
+    mapping(address => uint32) public _invalidFrom;
 
     constructor() ERC1155("https://ipfs.io/ipfs/QmZ2tGMUt8AndeghM5CL3pfZqcWaEos8YdqjxyRVtk4XGF?filename={id}.json") {}
 
@@ -93,8 +94,10 @@ IEmployerSft
      * This can only be done by a team member.
      * note: A wallet can remove itself from a team
      */
-    function removeFromMyTeam(address _from) public {
+    function removeFromMyTeam(address _from, uint32 _timestamp) public {
         uint256 _tokenId = _walletToTokenId[_msgSender()];
+        _invalidFrom[_from] = _timestamp;
+
         super._burn(_from, _tokenId, 1);
     }
 
@@ -104,8 +107,10 @@ IEmployerSft
      */
     function removeFromTeam(
         address _from,
-        uint256 _id
+        uint256 _id,
+        uint32 _timestamp
     ) public onlyOwner {
+        _invalidFrom[_from] = _timestamp;
         super._burn(_from, _id, 1);
     }
 
@@ -115,6 +120,14 @@ IEmployerSft
      */
     function employerIdFromWallet(address _address) external view returns (uint32) {
         return _walletToTokenId[_address];
+    }
+
+    /**
+     * @dev return the timestamp (if any) of when an employer wallet becomes invalid.
+     * This is to mark a wallet as invalid if the employer is no longer verified
+     */
+    function invalidFrom(address _address) external view returns (uint32) {
+        return _invalidFrom[_address];
     }
 
     // The following functions are overrides required by Solidity.

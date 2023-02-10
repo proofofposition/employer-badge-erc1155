@@ -8,6 +8,7 @@
 // yarn test && echo "PASSED" || echo "FAILED"
 //
 const {expect} = require("chai");
+const {getCurrentTimestamp} = require("hardhat/internal/hardhat-network/provider/utils/getCurrentTimestamp");
 
 describe("🚩 Full Popp Employer Verification Flow", function () {
     this.timeout(120000);
@@ -117,7 +118,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             it("Should be able to remove from team (admin)", async function () {
                 await myContract
                     .connect(owner)
-                    .removeFromTeam(alice.address, tokenId)
+                    .removeFromTeam(alice.address, tokenId, getCurrentTimestamp())
 
                 let balance = await myContract.balanceOf(alice.address, tokenId);
                 expect(balance.toBigInt()).to.be.equal(0);
@@ -126,7 +127,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             it("Should be able to remove from team (team member)", async function () {
                 await myContract
                     .connect(alice)
-                    .removeFromMyTeam(alice.address)
+                    .removeFromMyTeam(alice.address, getCurrentTimestamp())
 
                 let balance = await myContract.balanceOf(alice.address, tokenId);
                 expect(balance.toBigInt()).to.be.equal(0);
@@ -137,7 +138,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                 await expect(
                     myContract
                         .connect(bob)
-                        .removeFromTeam(alice.address, tokenId)
+                        .removeFromTeam(alice.address, tokenId, getCurrentTimestamp())
                 ).to.be.revertedWith("Ownable: caller is not the owner");
             });
         });
