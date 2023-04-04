@@ -8,9 +8,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "popp-interfaces/IEmployerSft.sol";
 // Desired Features
-// - Mint new employer badge (admin only)
-// - Assign ownership to employer (admin only)
-// - Add wallet to team (admin only)
+// - Mint a new employer badge (admin only)
+// - Assign ownership to an employer (admin only)
+// - Add a wallet to a team (admin only)
 // - Burn Tokens (admin only?)
 // - ERC1155 full interface (base, metadata, enumerable)
 contract PoppEmployerBadge is
@@ -26,7 +26,9 @@ IEmployerSft
     mapping(address => uint32) public _walletToTokenId;
     mapping(address => uint32) public _invalidFrom;
 
-    constructor() ERC1155("https://ipfs.io/ipfs/QmZ2tGMUt8AndeghM5CL3pfZqcWaEos8YdqjxyRVtk4XGF?filename={id}.json") {}
+    constructor() ERC1155("https://ipfs.io/ipfs/") {
+        _setBaseURI("https://ipfs.io/ipfs/");
+    }
 
     /**
      * @dev Mint a new Employer Verification Badge
@@ -34,8 +36,25 @@ IEmployerSft
      *
      * @return uint256 representing the newly minted token id
      */
-    function mintNewBadge(address _to) external onlyOwner returns (uint256) {
-        return _mintToken(_to);
+    function mintNewBadge(address _to, string memory _tokenURI) external onlyOwner returns (uint256) {
+        uint256 _tokenId = _mintToken(_to);
+        _setURI(_tokenId, _tokenURI);
+
+        return _tokenId;
+    }
+
+    /**
+     * @dev Sets `tokenURI` as the tokenURI of `tokenId`.
+     */
+    function setURI(uint256 tokenId, string memory tokenURI) external onlyOwner {
+        _setURI(tokenId, tokenURI);
+    }
+
+    /**
+    * @dev Sets `baseURI` as the `_baseURI` for all tokens
+     */
+    function setBaseURI(string memory baseURI) external onlyOwner {
+        _setBaseURI(baseURI);
     }
 
     /**
@@ -72,6 +91,7 @@ IEmployerSft
     function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
         _walletToTokenId[_to] = uint32(_tokenId);
+
         return _tokenId;
     }
 
@@ -111,6 +131,7 @@ IEmployerSft
         uint32 _timestamp
     ) public onlyOwner {
         _invalidFrom[_from] = _timestamp;
+
         super._burn(_from, _id, 1);
     }
 

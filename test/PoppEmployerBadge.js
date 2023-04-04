@@ -38,7 +38,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             // mint employer verification
             let mintResult = await myContract
                 .connect(owner)
-                .mintNewBadge(alice.address);
+                .mintNewBadge(alice.address, "TOKEN_URI");
 
             let batch = await myContract.balanceOfBatch([alice.address], [1])
             expect(batch.toString()).to.equal('1');
@@ -53,12 +53,12 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
 
             // check token uri
             let uri = await myContract.uri(tokenId);
-            expect(uri).to.be.equal("https://ipfs.io/ipfs/QmZ2tGMUt8AndeghM5CL3pfZqcWaEos8YdqjxyRVtk4XGF?filename={id}.json");
+            expect(uri).to.be.equal("https://ipfs.io/ipfs/TOKEN_URI");
 
             await expect(
                 myContract
                     .connect(bob)
-                    .mintNewBadge(bob.address)
+                    .mintNewBadge(bob.address, "TOKEN_URI")
             ).to.be.revertedWith("Ownable: caller is not the owner");
 
             // test non-transferable

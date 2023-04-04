@@ -85,7 +85,7 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
 
                 // alice has an employers badge
                 await this.contract
-                    .mintNewBadge(alice.address);
+                    .mintNewBadge(alice.address, "TOKEN_URI");
 
                 await expect(
                     this.contract
@@ -110,7 +110,7 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                     .propose("test.json");
 
                 // alice needs a badge to vote
-                await this.contract.mintNewBadge(alice.address);
+                await this.contract.mintNewBadge(alice.address, "TOKEN_URI");
 
                 await this.contract
                     .connect(alice)
@@ -138,7 +138,7 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                         .vote(1, false)
                 ).to.be.revertedWith("You already voted");
                 // you need to hold POPP tokens to vote
-                await this.contract.mintNewBadge(connie.address);
+                await this.contract.mintNewBadge(connie.address, "TOKEN_URI");
                 await expect(
                     this.contract
                         .connect(connie)
@@ -172,7 +172,7 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                     .connect(alice)
                     .propose("test.json");
 
-                await this.contract.mintNewBadge(bob.address);
+                await this.contract.mintNewBadge(bob.address, "TOKEN_URI");
 
                 await this.contract
                     .connect(bob)
@@ -209,7 +209,7 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                     .propose("test.json");
 
                 // bob needs a badge to vote
-                await this.contract.mintNewBadge(bob.address);
+                await this.contract.mintNewBadge(bob.address, "TOKEN_URI");
                 // bob votes no
                 await this.contract
                     .connect(bob)
@@ -250,7 +250,7 @@ describe("🚩 Full Popp Employer Verification Voting Flow", function () {
                     .connect(alice)
                     .propose("test.json");
                 // bob needs a badge to vote
-                await this.contract.mintNewBadge(bob.address);
+                await this.contract.mintNewBadge(bob.address, "TOKEN_URI");
                 // bob votes no
                 await this.contract
                     .connect(bob)
