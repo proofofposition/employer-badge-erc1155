@@ -31,8 +31,8 @@ IEmployerSft
     }
 
     /**
-     * @dev Mint a new Employer Verification Badge
-     * the uri here will be https://test.com/{id}.json.
+     * @dev Mint a new Employer Verification Badge. This is done when onboarding a new employer.
+     * After the first token has been minted, the employer can then add wallets to their team.
      *
      * @return uint256 representing the newly minted token id
      */
