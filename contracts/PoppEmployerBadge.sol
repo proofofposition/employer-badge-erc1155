@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "popp-interfaces/IEmployerSft.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
+
 // Desired Features
 // - Mint a new employer badge (admin only)
 // - Assign ownership to an employer (admin only)
@@ -14,20 +16,24 @@ import "popp-interfaces/IEmployerSft.sol";
 // - Burn Tokens (admin only?)
 // - ERC1155 full interface (base, metadata, enumerable)
 contract PoppEmployerBadge is
-ERC1155,
-ERC1155URIStorage,
-Ownable,
-IEmployerSft
+ERC1155Upgradeable,
+ERC1155URIStorageUpgradeable,
+OwnableUpgradeable,
+UUPSUpgradeable
 {
-    using Counters for Counters.Counter;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    Counters.Counter private _tokenIdCounter;
+    CountersUpgradeable.Counter private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
     mapping(address => uint32) public _walletToTokenId;
     mapping(address => uint32) public _invalidFrom;
 
-    constructor() ERC1155("https://ipfs.io/ipfs/") {
+    function initialize() initializer public {
+        __ERC1155_init("https://ipfs.io/ipfs/");
+        __ERC1155URIStorage_init();
         _setBaseURI("https://ipfs.io/ipfs/");
+        __Ownable_init();
+        __UUPSUpgradeable_init();
     }
 
     /**
@@ -152,12 +158,8 @@ IEmployerSft
     }
 
     // The following functions are overrides required by Solidity.
-    function uri(uint256 tokenId) public view virtual override(ERC1155, ERC1155URIStorage)  returns (string memory) {
+    function uri(uint256 tokenId) public view virtual override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)  returns (string memory) {
         return super.uri(tokenId);
-    }
-
-    function selfDestruct() public onlyOwner {
-        selfdestruct(payable(owner()));
     }
 
     /**
@@ -170,7 +172,75 @@ IEmployerSft
         uint256[] memory,
         uint256[] memory,
         bytes memory
-    ) internal virtual override(ERC1155) {
+    ) internal virtual override(ERC1155Upgradeable) {
         require(from == address(0) || to == address(0), "Employer badges are non-transferable");
+    }
+
+    function _authorizeUpgrade(address newImplementation)
+    internal
+    onlyOwner
+    override
+    {}
+
+    /**
+     * @dev See {IERC1155-balanceOf}.
+     *
+     * Requirements:
+     *
+     * - `account` cannot be the zero address.
+     */
+    function balanceOf(address account, uint256 id) public view virtual override(ERC1155Upgradeable) returns (uint256) {
+        return super.balanceOf(account, id);
+    }
+
+    /**
+    * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155Upgradeable) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public virtual override(ERC1155Upgradeable) {
+        super.setApprovalForAll(operator, approved);
+    }
+
+    /**
+     * @dev See {IERC1155-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public virtual override(ERC1155Upgradeable) {
+        super.safeTransferFrom(from, to, id, amount, data);
+    }
+
+    /**
+     * @dev See {IERC1155-safeBatchTransferFrom}.
+     */
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public virtual override(ERC1155Upgradeable) {
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
+
+    /**
+     * @dev See {IERC1155-isApprovedForAll}.
+     */
+    function isApprovedForAll(address account, address operator) public view virtual override(ERC1155Upgradeable) returns (bool) {
+        return super.isApprovedForAll(account, operator);
+    }
+
+    function balanceOfBatch(
+        address[] memory accounts,
+        uint256[] memory ids
+    ) public view virtual override(ERC1155Upgradeable) returns (uint256[] memory) {
+        return super.balanceOfBatch(accounts, ids);
     }
 }
