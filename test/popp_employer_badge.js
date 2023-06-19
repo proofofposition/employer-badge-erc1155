@@ -24,8 +24,6 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
     // console.log("hre:",Object.keys(hre)) // <-- you can access the hardhat runtime env here
 
     describe("Popp Verification", function () {
-        // `beforeEach` will run before each test, re-deploying the contract every
-        // time. It receives a callback, which can be async.
         beforeEach(async function () {
             [owner, alice, bob, connie] = await ethers.getSigners();
 

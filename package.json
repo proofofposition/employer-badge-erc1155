@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RingierIMU/popp-employer-verification.git"
+    "url": "git+https://github.com/proofofposition/popp-employer-verification.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/RingierIMU/popp-employer-verification/issues"
+    "url": "https://github.com/proofofposition/popp-employer-verification/issues"
   },
-  "homepage": "https://github.com/RingierIMU/popp-employer-verification#readme",
+  "homepage": "https://github.com/proofofposition/popp-employer-verification#readme",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
