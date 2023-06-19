@@ -16,7 +16,7 @@ npx hardhat test
 
 ## Deployed Contracts
 ### Goerli Testnet
-- Contract Address: `0x5FbDB2315678afecb367f032d93F642f64180aa3`
+- Contract Address: `0xbA48b6AC88761d8B153E50Ca882FB4Ae798f57df`
 ### Ethereum Mainnet
 - Contract Address:  coming soon ...
 ### Polygon Goerli
