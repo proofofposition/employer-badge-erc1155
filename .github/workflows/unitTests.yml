@@ -8,12 +8,8 @@ on:
       - 'README.md'
       - '.github/workflows/deploy.yml'
       - '.github/workflows/deployStaging.yml'
-      - 'tests/*'
       - '.editorconfig'
       - '.styleci.yml'
-      - '_ide_helper.php'
-      - 'resources/docs/*'
-      - 'vapor.yml'
 
 jobs:
   unit-tests:
