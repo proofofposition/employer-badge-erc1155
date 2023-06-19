@@ -81,7 +81,7 @@ UUPSUpgradeable
      */
     function addToMyTeam(address _to) external returns (uint256) {
         uint256 _tokenId = _walletToTokenId[_msgSender()];
-        require(_tokenId != 0, "You need to register your employer");
+        require(_tokenId != 0, "You need to own a badge to add to your team");
         require(_walletToTokenId[_to] == 0, "Wallet already apart of a team");
 
         return _addToTeam(_to, _tokenId);

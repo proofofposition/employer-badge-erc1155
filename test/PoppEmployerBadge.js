@@ -111,7 +111,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                     myContract
                         .connect(bob)
                         .addToMyTeam(connie.address)
-                ).to.be.revertedWith("You need to register your employer");
+                ).to.be.revertedWith("You need to own a badge to add to your team");
             });
 
             it("Should be able to remove from team (admin)", async function () {
