@@ -29,9 +29,9 @@ UUPSUpgradeable
     mapping(address => uint32) public _invalidFrom;
 
     function initialize() initializer public {
-        __ERC1155_init("https://ipfs.io/ipfs/");
+        __ERC1155_init("ipfs://");
         __ERC1155URIStorage_init();
-        _setBaseURI("https://ipfs.io/ipfs/");
+        _setBaseURI("ipfs://");
         __Ownable_init();
         __UUPSUpgradeable_init();
     }
@@ -181,66 +181,4 @@ UUPSUpgradeable
     onlyOwner
     override
     {}
-
-    /**
-     * @dev See {IERC1155-balanceOf}.
-     *
-     * Requirements:
-     *
-     * - `account` cannot be the zero address.
-     */
-    function balanceOf(address account, uint256 id) public view virtual override(ERC1155Upgradeable) returns (uint256) {
-        return super.balanceOf(account, id);
-    }
-
-    /**
-    * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155Upgradeable) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
-
-    function setApprovalForAll(address operator, bool approved) public virtual override(ERC1155Upgradeable) {
-        super.setApprovalForAll(operator, approved);
-    }
-
-    /**
-     * @dev See {IERC1155-safeTransferFrom}.
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public virtual override(ERC1155Upgradeable) {
-        super.safeTransferFrom(from, to, id, amount, data);
-    }
-
-    /**
-     * @dev See {IERC1155-safeBatchTransferFrom}.
-     */
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) public virtual override(ERC1155Upgradeable) {
-        super.safeBatchTransferFrom(from, to, ids, amounts, data);
-    }
-
-    /**
-     * @dev See {IERC1155-isApprovedForAll}.
-     */
-    function isApprovedForAll(address account, address operator) public view virtual override(ERC1155Upgradeable) returns (bool) {
-        return super.isApprovedForAll(account, operator);
-    }
-
-    function balanceOfBatch(
-        address[] memory accounts,
-        uint256[] memory ids
-    ) public view virtual override(ERC1155Upgradeable) returns (uint256[] memory) {
-        return super.balanceOfBatch(accounts, ids);
-    }
 }

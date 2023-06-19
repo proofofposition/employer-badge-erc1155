@@ -51,7 +51,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
 
             // check token uri
             let uri = await myContract.uri(tokenId);
-            expect(uri).to.be.equal("https://ipfs.io/ipfs/TOKEN_URI");
+            expect(uri).to.be.equal("ipfs://TOKEN_URI");
 
             await expect(
                 myContract
