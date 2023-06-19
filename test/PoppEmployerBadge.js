@@ -27,13 +27,11 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
         // `beforeEach` will run before each test, re-deploying the contract every
         // time. It receives a callback, which can be async.
         beforeEach(async function () {
+            [owner, alice, bob, connie] = await ethers.getSigners();
+
             // deploy contract
             const PoppEmployerBadge = await ethers.getContractFactory("PoppEmployerBadge");
-            myContract = await PoppEmployerBadge.deploy();
-
-            [owner, alice, bob, connie] = await ethers.getSigners();
-            const balance0ETH = await ethers.provider.getBalance(myContract.address);
-            console.log("\t", " ⚖️ Starting Contract ETH balance: ", balance0ETH.toString());
+            myContract = await upgrades.deployProxy(PoppEmployerBadge);
 
             // mint employer verification
             let mintResult = await myContract
@@ -53,7 +51,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
 
             // check token uri
             let uri = await myContract.uri(tokenId);
-            expect(uri).to.be.equal("https://ipfs.io/ipfs/TOKEN_URI");
+            expect(uri).to.be.equal("ipfs://TOKEN_URI");
 
             await expect(
                 myContract
@@ -71,6 +69,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             it("Owner should add a wallet to a pre-existing team", async function () {
                 // add to team
                 await myContract
+                    .connect(owner)
                     .addToTeam(connie.address, 1);
 
                 expect(await myContract.employerIdFromWallet(connie.address)).to.equal(
@@ -150,25 +149,6 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             expect(await myContract.supportsInterface(0x01ffc9a7)).to.equal(
                 true
             );
-
-            expect(await myContract.owner()).to.equal(
-                owner.address
-            );
-
-            await myContract.transferOwnership(alice.address)
-
-            expect(await myContract.owner()).to.equal(
-                alice.address
-            );
-
-            await myContract.connect(alice).transferOwnership(owner.address)
-
-            await myContract.selfDestruct();
-
-            await expect(
-                myContract
-                    .balanceOf(alice.address, tokenId)
-            ).to.be.reverted;
         });
     });
 });

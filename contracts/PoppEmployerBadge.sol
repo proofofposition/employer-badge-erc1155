@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "popp-interfaces/IEmployerSft.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
+
 // Desired Features
 // - Mint a new employer badge (admin only)
 // - Assign ownership to an employer (admin only)
@@ -14,20 +16,24 @@ import "popp-interfaces/IEmployerSft.sol";
 // - Burn Tokens (admin only?)
 // - ERC1155 full interface (base, metadata, enumerable)
 contract PoppEmployerBadge is
-ERC1155,
-ERC1155URIStorage,
-Ownable,
-IEmployerSft
+ERC1155Upgradeable,
+ERC1155URIStorageUpgradeable,
+OwnableUpgradeable,
+UUPSUpgradeable
 {
-    using Counters for Counters.Counter;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    Counters.Counter private _tokenIdCounter;
+    CountersUpgradeable.Counter private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
     mapping(address => uint32) public _walletToTokenId;
     mapping(address => uint32) public _invalidFrom;
 
-    constructor() ERC1155("https://ipfs.io/ipfs/") {
-        _setBaseURI("https://ipfs.io/ipfs/");
+    function initialize() initializer public {
+        __ERC1155_init("ipfs://");
+        __ERC1155URIStorage_init();
+        _setBaseURI("ipfs://");
+        __Ownable_init();
+        __UUPSUpgradeable_init();
     }
 
     /**
@@ -152,12 +158,8 @@ IEmployerSft
     }
 
     // The following functions are overrides required by Solidity.
-    function uri(uint256 tokenId) public view virtual override(ERC1155, ERC1155URIStorage)  returns (string memory) {
+    function uri(uint256 tokenId) public view virtual override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)  returns (string memory) {
         return super.uri(tokenId);
-    }
-
-    function selfDestruct() public onlyOwner {
-        selfdestruct(payable(owner()));
     }
 
     /**
@@ -170,7 +172,13 @@ IEmployerSft
         uint256[] memory,
         uint256[] memory,
         bytes memory
-    ) internal virtual override(ERC1155) {
+    ) internal virtual override(ERC1155Upgradeable) {
         require(from == address(0) || to == address(0), "Employer badges are non-transferable");
     }
+
+    function _authorizeUpgrade(address newImplementation)
+    internal
+    onlyOwner
+    override
+    {}
 }

@@ -13,3 +13,13 @@ To run the tests run the following:
 ```shell
 npx hardhat test
 ```
+
+## Deployed Contracts
+### Goerli Testnet
+- Contract Address: `0x5FbDB2315678afecb367f032d93F642f64180aa3`
+### Ethereum Mainnet
+- Contract Address:  coming soon ...
+### Polygon Goerli
+- Contract Address:
+### Polygon
+- Contract Address: coming soon ...
