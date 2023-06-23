@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
+import "popp-interfaces/IEmployerSft.sol";
 
 // Desired Features
 // - Mint a new employer badge (admin only)
@@ -19,7 +20,8 @@ contract PoppEmployerBadge is
 ERC1155Upgradeable,
 ERC1155URIStorageUpgradeable,
 OwnableUpgradeable,
-UUPSUpgradeable
+UUPSUpgradeable,
+IEmployerSft
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
@@ -120,7 +122,7 @@ UUPSUpgradeable
      * This can only be done by a team member.
      * note: A wallet can remove itself from a team
      */
-    function removeFromMyTeam(address _from, uint32 _timestamp) public {
+    function removeFromMyTeam(address _from, uint32 _timestamp) external {
         uint256 _tokenId = _walletToTokenId[_msgSender()];
         _invalidFrom[_from] = _timestamp;
 
