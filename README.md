@@ -17,6 +17,8 @@ npx hardhat test
 ## Deployed Contracts
 ### Goerli Testnet
 - Contract Address: `0xbA48b6AC88761d8B153E50Ca882FB4Ae798f57df`
+### Sepolia Testnet
+- Contract Address: `0x9452B6f7726214cc6BFD04c6145033D113A78eC4`
 ### Ethereum Mainnet
 - Contract Address:  coming soon ...
 ### Polygon Goerli

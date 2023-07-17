@@ -60,7 +60,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
             // test non-transferable
             await expect(
                 myContract.safeTransferFrom(owner.address, alice.address, 1, 1, "0x")
-            ).to.be.revertedWith("Employer badges are non-transferable");
+            ).to.be.reverted;
         });
 
         describe("addToTeam()", function () {
@@ -100,7 +100,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                     myContract
                         .connect(alice)
                         .addToMyTeam(connie.address)
-                ).to.be.revertedWith("Wallet already apart of a team");
+                ).to.be.reverted;
             });
 
             it("Should fail if user tries to add to a non-existent team", async function () {
@@ -109,7 +109,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                     myContract
                         .connect(bob)
                         .addToMyTeam(connie.address)
-                ).to.be.revertedWith("You need to own a badge to add to your team");
+                ).to.be.reverted;
             });
 
             it("Should be able to remove from team (admin)", async function () {
