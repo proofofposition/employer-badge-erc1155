@@ -5,7 +5,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
 import "popp-interfaces/IEmployerSft.sol";
@@ -35,14 +34,10 @@ IEmployerSft
     error MissingEmployerBadge();
     error WalletAlreadyOnTeam(address wallet);
     error NonTransferable();
-    //////////////
-    // Types  //
-    /////////////
-    using CountersUpgradeable for CountersUpgradeable.Counter;
     //////////////////////
     // State Variables //
     /////////////////////
-    CountersUpgradeable.Counter private _tokenIdCounter;
+    uint256 private _tokenIdCounter;
     // This can only be done because we only allow 1 token per wallet
     mapping(address => uint32) private _walletToTokenId;
     mapping(address => uint32) private _invalidFrom;
@@ -172,10 +167,8 @@ IEmployerSft
      * @return uint256 representing the newly minted token id
      */
     function _mintToken(address _to) internal returns (uint256) {
-        _tokenIdCounter.increment();
-        uint256 _tokenId = _tokenIdCounter.current();
-
-        return _addToTeam(_to, _tokenId);
+        _tokenIdCounter++;
+        return _addToTeam(_to, _tokenIdCounter);
     }
 
     /**
@@ -187,7 +180,7 @@ IEmployerSft
      * @param _timestamp uint32 representing the timestamp of when the token became invalid
      */
     function removeFromMyTeam(address _from, uint32 _timestamp) external {
-        // TODO: Add timestamp valididation
+        // TODO: Add timestamp validation
         uint256 _tokenId = _walletToTokenId[_msgSender()];
         _invalidFrom[_from] = _timestamp;
 
