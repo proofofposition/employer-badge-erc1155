@@ -8,6 +8,8 @@ async function main() {
     console.log("Deploying PoppEmployerBadge...");
     await poppEmployerBadge.deployed();
     console.log("PoppEmployerBadge deployed to:", poppEmployerBadge.address);
+    let owner = await poppEmployerBadge.owner();
+    console.log("Owner:", owner);
 }
 
 main();

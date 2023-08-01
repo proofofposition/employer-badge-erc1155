@@ -45,12 +45,12 @@ IEmployerSft
     /////////////
     // Events //
     ///////////
-    event NewBadgeMinted(address indexed _to, string indexed _tokenURI);
-    event UriSet(uint256 indexed _tokenId, string indexed _tokenURI);
-    event BaseUriSet(string indexed _baseUri);
-    event WalletAddedToTeam(address indexed _wallet, uint256 indexed _tokenId);
-    event WalletRemovedFromTeam(address indexed _wallet, uint256 indexed _tokenId);
-    event TokenBurned(uint256 indexed _tokenId);
+    event NewBadgeMinted(uint256 _tokenId, address _to, string _tokenURI);
+    event UriSet(uint256 _tokenId, string _tokenURI);
+    event BaseUriSet(string _baseUri);
+    event WalletAddedToTeam(address _wallet, uint256 _tokenId);
+    event WalletRemovedFromTeam(address _wallet, uint256 _tokenId);
+    event TokenBurned(uint256 _tokenId);
 
     function initialize() initializer public {
         __ERC1155_init("ipfs://");
@@ -58,6 +58,7 @@ IEmployerSft
         _setBaseURI("ipfs://");
         __Ownable_init();
         __UUPSUpgradeable_init();
+        _tokenIdCounter = 0;
     }
 
     /**
@@ -73,7 +74,7 @@ IEmployerSft
     function mintNewBadge(address _to, string memory _tokenURI) external onlyOwner returns (uint256) {
         uint256 _tokenId = _mintToken(_to);
         _setURI(_tokenId, _tokenURI);
-        emit NewBadgeMinted(_to, _tokenURI);
+        emit NewBadgeMinted(_tokenId, _to, _tokenURI);
 
         return _tokenId;
     }

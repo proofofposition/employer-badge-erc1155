@@ -1,0 +1,17 @@
+{
+  "name": "Verified Ringier Employer",
+  "key": "ringier",
+  "image": "ipfs://QmUQragf4ZD6M2MxsNtBMV7fjxJjso2QdPb73hwG1P4cN7",
+  "employer": "Ringier",
+  "attributes": [
+    {
+      "display_type": "date",
+      "trait_type": "start date",
+      "value": 1546360800
+    },
+    {
+      "trait_type": "Employer",
+      "value": "Ringier"
+    }
+  ]
+}
