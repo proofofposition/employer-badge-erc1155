@@ -93,7 +93,7 @@ describe("🚩 Full Popp Employer Verification Flow", function () {
                     .addToMyTeam(connie.address);
                 // check uri is the same for the new wallet token
                 let txResult = await mintResult.wait(1);
-                let _tokenId = txResult.events[0].args.id.toString();
+                let _tokenId = txResult.events[0].args._tokenId.toString();
                 expect(_tokenId).to.be.equal("1");
 
                 await expect(

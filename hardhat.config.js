@@ -3,7 +3,7 @@ require("hardhat-gas-reporter");
 require('dotenv').config({path: __dirname + '/.env'});
 require('@openzeppelin/hardhat-upgrades');
 
-const {POLYGON_API_URL, POLYGON_MUMBAI_API_URL, OPTIMISM_API_URL, OPTIMISM_GOERLI_API_URL, SEPOLIA_API_URL, GOERLI_API_URL, PRIVATE_KEY, REPORT_GAS} = process.env;
+const {BASE_GOERLI_API_URL, POLYGON_API_URL, POLYGON_MUMBAI_API_URL, OPTIMISM_API_URL, OPTIMISM_GOERLI_API_URL, SEPOLIA_API_URL, GOERLI_API_URL, PRIVATE_KEY, REPORT_GAS} = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -49,6 +49,12 @@ module.exports = {
         },
         polygon_mumbai: {
             url: POLYGON_MUMBAI_API_URL,
+            accounts: [
+                PRIVATE_KEY
+            ]
+        },
+        base_goerli: {
+            url: BASE_GOERLI_API_URL,
             accounts: [
                 PRIVATE_KEY
             ]

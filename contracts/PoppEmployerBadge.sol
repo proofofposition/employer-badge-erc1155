@@ -79,6 +79,45 @@ IEmployerSft
         return _tokenId;
     }
 
+
+    /**
+     * @dev Mint a pre-verified employer token and transfer to a new wallet.
+     * An admin function for setting up a team's wallets
+     * we allow admins to add to any team
+     * @param _to address of the wallet to receive the token
+     * @param _tokenId uint256 representing the token id
+     *
+     * @return uint256 representing the newly minted token id
+     */
+    function addToTeam(address _to, uint256 _tokenId) external onlyOwner returns (uint256) {
+        if (_walletToTokenId[_to] != 0) {
+            revert WalletAlreadyOnTeam(_to);
+        }
+        emit WalletAddedToTeam(_to, _tokenId);
+
+        return _addToTeam(_to, _tokenId);
+    }
+
+    /**
+    * @dev Mint a pre-verified employer token and transfer to a new wallet
+     * we allow badge owners to add to their team
+     *
+     * @return uint256 representing the newly minted token id
+     */
+    function addToMyTeam(address _to) external returns (uint256) {
+        uint256 _tokenId = _walletToTokenId[_msgSender()];
+        if (_tokenId == 0) {
+            revert MissingEmployerBadge();
+        }
+
+        if (_walletToTokenId[_to] != 0) {
+            revert WalletAlreadyOnTeam(_to);
+        }
+        emit WalletAddedToTeam(_to, _tokenId);
+
+        return _addToTeam(_to, _tokenId);
+    }
+
     /**
      * @dev Sets `tokenURI` as the tokenURI of `tokenId`.
      * This is an admin function for setting up the tokenURI of an employer's badge
@@ -105,42 +144,6 @@ IEmployerSft
     }
 
     /**
-     * @dev Mint a pre-verified employer token and transfer to a new wallet.
-     * An admin function for setting up a team's wallets
-     * we allow admins to add to any team
-     * @param _to address of the wallet to receive the token
-     * @param _tokenId uint256 representing the token id
-     *
-     * @return uint256 representing the newly minted token id
-     */
-    function addToTeam(address _to, uint256 _tokenId) external onlyOwner returns (uint256) {
-        if (_walletToTokenId[_to] != 0) {
-            revert WalletAlreadyOnTeam(_to);
-        }
-
-        return _addToTeam(_to, _tokenId);
-    }
-
-    /**
-    * @dev Mint a pre-verified employer token and transfer to a new wallet
-     * we allow badge owners to add to their team
-     *
-     * @return uint256 representing the newly minted token id
-     */
-    function addToMyTeam(address _to) external returns (uint256) {
-        uint256 _tokenId = _walletToTokenId[_msgSender()];
-        if (_tokenId == 0) {
-            revert MissingEmployerBadge();
-        }
-
-        if (_walletToTokenId[_to] != 0) {
-            revert WalletAlreadyOnTeam(_to);
-        }
-
-        return _addToTeam(_to, _tokenId);
-    }
-
-    /**
     * @dev Mint a new token and add to a team
      * this is an internal function that is called by `mintNewBadge` and `addToTeam`
      * 1. Mint the token
@@ -153,7 +156,6 @@ IEmployerSft
     function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
         _walletToTokenId[_to] = uint32(_tokenId);
-        emit WalletAddedToTeam(_to, _tokenId);
 
         return _tokenId;
     }
