@@ -50,7 +50,6 @@ IEmployerSft
     event BaseUriSet(string _baseUri);
     event WalletAddedToTeam(address _wallet, uint256 _tokenId);
     event WalletRemovedFromTeam(address _wallet, uint256 _tokenId);
-    event TokenBurned(uint256 _tokenId);
 
     function initialize() initializer public {
         __ERC1155_init("ipfs://");
