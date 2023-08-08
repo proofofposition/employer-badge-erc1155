@@ -41,11 +41,12 @@ IEmployerSft
     // This can only be done because we only allow 1 token per wallet
     mapping(address => uint32) private _walletToTokenId;
     mapping(address => uint32) private _invalidFrom;
+    mapping(uint256 => string) private _tokenIdToEmployerKey;
 
     /////////////
     // Events //
     ///////////
-    event NewBadgeMinted(uint256 _tokenId, address _to, string _tokenURI);
+    event NewBadgeMinted(uint256 _tokenId, address _to, string _tokenURI, string _employerKey);
     event UriSet(uint256 _tokenId, string _tokenURI);
     event BaseUriSet(string _baseUri);
     event WalletAddedToTeam(address _wallet, uint256 _tokenId);
@@ -67,13 +68,19 @@ IEmployerSft
      * @notice this contract is an ERC-1155 thus semi fungible.
      * @param _to address of the first wallet to receive the token
      * @param _tokenURI string representing the tokenURI of the new token
+     * @param _employerKey unique identifier for the employer within the protocol
      *
      * @return uint256 representing the newly minted token id
      */
-    function mintNewBadge(address _to, string memory _tokenURI) external onlyOwner returns (uint256) {
+    function mintNewBadge(
+        address _to,
+        string memory _tokenURI,
+        string memory _employerKey
+    ) external onlyOwner returns (uint256) {
         uint256 _tokenId = _mintToken(_to);
         _setURI(_tokenId, _tokenURI);
-        emit NewBadgeMinted(_tokenId, _to, _tokenURI);
+        _tokenIdToEmployerKey[_tokenId] = _employerKey;
+        emit NewBadgeMinted(_tokenId, _to, _tokenURI, _employerKey);
 
         return _tokenId;
     }
@@ -208,8 +215,8 @@ IEmployerSft
      * @dev return the employer token id for a given wallet.
      * Remember that a wallet can only own 1 employer token at a time
      */
-    function employerIdFromWallet(address _address) external view returns (uint32) {
-        return _walletToTokenId[_address];
+    function employerKeyFromWallet(address _address) external view returns (string memory) {
+        return _tokenIdToEmployerKey[_walletToTokenId[_address]];
     }
 
     /**
