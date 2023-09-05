@@ -72,7 +72,7 @@ IEmployerSft
      *
      * @return uint256 representing the newly minted token id
      */
-    function mintNewBadge(
+    function mintNew(
         address _to,
         string memory _tokenURI,
         string memory _employerKey
@@ -151,7 +151,7 @@ IEmployerSft
 
     /**
     * @dev Mint a new token and add to a team
-     * this is an internal function that is called by `mintNewBadge` and `addToTeam`
+     * this is an internal function that is called by `mintNew` and `addToTeam`
      * 1. Mint the token
      * 2. Set the token to the wallet
      * @param _to address of the wallet to receive the token
@@ -168,7 +168,7 @@ IEmployerSft
 
     /**
      * @dev Mint a new NFT. This is an internal function that is called by
-     * `mintNewBadge` and `addToTeam`.
+     * `mintNew` and `addToTeam`.
      * 1. Mint the token
      * 2. Set the token to the wallet
      * @param _to address of the wallet to receive the token
